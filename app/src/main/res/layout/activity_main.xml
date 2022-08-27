@@ -12,7 +12,7 @@
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
         android:contentDescription="@string/description_post_author_avatar"
-        android:src=""
+        android:src="@drawable/ic_launcher_foreground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@sample/posts_avatars" />
@@ -81,7 +81,7 @@
         android:layout_height="@dimen/icon_size"
         android:layout_marginTop="@dimen/margin_size"
         android:contentDescription="@string/description_post_likes"
-        android:src=""
+        android:src="@drawable/ic_baseline_favorite_border_24"
         app:layout_constraintTop_toBottomOf="@id/content_barrier"
         tools:srcCompat="@drawable/ic_baseline_favorite_border_24" />
 
@@ -101,7 +101,7 @@
         android:layout_marginStart="@dimen/margin_size"
         android:layout_marginTop="@dimen/margin_size"
         android:contentDescription="@string/description_post_shares"
-        android:src=""
+        android:src="@drawable/ic_baseline_share_24"
         app:layout_constraintStart_toEndOf="@id/post_likes_count"
         app:layout_constraintTop_toBottomOf="@id/content_barrier"
         tools:srcCompat="@drawable/ic_baseline_share_24" />
@@ -121,7 +121,7 @@
         android:layout_height="@dimen/icon_size"
         android:layout_marginTop="@dimen/margin_size"
         android:contentDescription="@string/description_post_views"
-        android:src=""
+        android:src="@drawable/ic_baseline_remove_red_eye_24"
         app:layout_constraintEnd_toStartOf="@id/post_views_count"
         app:layout_constraintTop_toBottomOf="@id/content_barrier"
         tools:srcCompat="@drawable/ic_baseline_remove_red_eye_24" />
