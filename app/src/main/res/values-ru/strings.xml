@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">НМедиа</string>
-    <string name="nmedia">НМедиа!</string>
+    <string name="description_post_author_avatar">Аватарка автора поста</string>
+    <string name="description_post_menu">Меню сообщения</string>
+    <string name="description_post_likes">Отметок \"понравилось\"</string>
+    <string name="description_post_shares">Количество репостов</string>
+    <string name="description_post_views">Количество просмотров</string>
 </resources>
