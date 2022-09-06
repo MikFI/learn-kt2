@@ -56,4 +56,8 @@ dependencies {
     // activity
     implementation "androidx.activity:activity-ktx:$activity_version"
 
+    //для отображения элементов списком
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+
+
 }
