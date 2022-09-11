@@ -5,5 +5,13 @@
     <string name="description_post_likes">Post likes</string>
     <string name="description_post_shares">Post shares</string>
     <string name="description_post_views">Post views</string>
+    <string name="remove">Remove</string>
+    <string name="edit">Edit</string>
+    <string name="description_send_post">Send post</string>
+    <string name="new_post_hint">Type new message here</string>
+    <string name="empty_content_error">Content can\'t be empty</string>
+    <string name="cancel_edit">Cancel edit</string>
+    <string name="action_edit">Edit post</string>
+    <string name="action_create">Create Post</string>
 
 </resources>

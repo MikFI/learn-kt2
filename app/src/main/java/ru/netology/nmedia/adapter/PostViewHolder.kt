@@ -1,5 +1,6 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.adapter
 
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
@@ -8,9 +9,9 @@ import kotlin.math.floor
 
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val onLikeListener: (Post) -> Unit,
-    private val onShareListener: (Post) -> Unit
+    private val listener: OnInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
+
     fun bind(post: Post) {
         updateView(post, binding)
         setListeners(binding, post)
@@ -32,10 +33,28 @@ class PostViewHolder(
 
     private fun setListeners(binding: CardPostBinding, post: Post) {
         binding.apply {
-            postLikesIcon.setOnClickListener { onLikeListener(post) }
-            postLikesCount.setOnClickListener { onLikeListener(post) }
-            postSharesIcon.setOnClickListener { onShareListener(post) }
-            postSharesCount.setOnClickListener { onShareListener(post) }
+            postLikesIcon.setOnClickListener { listener.like(post) }
+            postLikesCount.setOnClickListener { listener.like(post) }
+            postSharesIcon.setOnClickListener { listener.share(post) }
+            postSharesCount.setOnClickListener { listener.share(post) }
+            menuButton.setOnClickListener{
+                PopupMenu(it.context, it).apply {
+                    inflate(R.menu.options_post)
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.remove ->{
+                                listener.remove(post)
+                                true
+                            }
+                            R.id.edit ->{
+                                listener.edit(post)
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                }.show()
+            }
         }
     }
 }

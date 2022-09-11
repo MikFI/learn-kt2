@@ -6,4 +6,12 @@
     <string name="description_post_likes">Отметок \"понравилось\"</string>
     <string name="description_post_shares">Количество репостов</string>
     <string name="description_post_views">Количество просмотров</string>
+    <string name="remove">Удалить</string>
+    <string name="edit">Изменить</string>
+    <string name="description_send_post">Отправить сообщение</string>
+    <string name="new_post_hint">Введите новое сообщение</string>
+    <string name="empty_content_error">Сообщение не может быть пустым</string>
+    <string name="cancel_edit">Отменить редактирование</string>
+    <string name="action_edit">Редактирование сообщения</string>
+    <string name="action_create">Создание сообщения</string>
 </resources>
