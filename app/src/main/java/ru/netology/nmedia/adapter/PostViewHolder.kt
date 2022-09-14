@@ -22,21 +22,17 @@ class PostViewHolder(
             author.text = post.author
             published.text = post.published
             content.text = post.content
-            postLikesCount.text = parseCount(post.likes)
-            postSharesCount.text = parseCount(post.shares)
-            postViewsCount.text = parseCount(post.views)
-            postLikesIcon.setImageResource(
-                if (post.likedByMe) R.drawable.ic_like_blue_24 else R.drawable.ic_like_gray_24
-            )
+            postLikesIcon.text = parseCount(post.likes)
+            postSharesIcon.text = parseCount(post.shares)
+            postViewsIcon.text = parseCount(post.views)
+            postLikesIcon.isChecked = post.likedByMe
         }
     }
 
     private fun setListeners(binding: CardPostBinding, post: Post) {
         binding.apply {
             postLikesIcon.setOnClickListener { listener.like(post) }
-            postLikesCount.setOnClickListener { listener.like(post) }
             postSharesIcon.setOnClickListener { listener.share(post) }
-            postSharesCount.setOnClickListener { listener.share(post) }
             menuButton.setOnClickListener{
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
