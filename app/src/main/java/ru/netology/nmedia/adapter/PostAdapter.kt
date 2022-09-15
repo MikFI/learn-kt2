@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,15 +7,18 @@ import androidx.recyclerview.widget.ListAdapter
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.databinding.CardPostBinding
 
-typealias onLikeListener = (Post) -> Unit
-typealias onShareListener = (Post) -> Unit
+interface OnInteractionListener {
+    fun like(post: Post)
+    fun share(post: Post)
+    fun edit(post: Post)
+    fun remove(post: Post)
+}
 
 //adapter представляет собой мост между набором данных и объектом, использующим эти данные
 //также отвечает за создание View-компонента для каждой единицы данных из набора
 //в нашем случае такой компонентой является PostViewHolder
 class PostAdapter(
-    private val onLikeListener: onLikeListener,
-    private val onShareListener: onShareListener
+    private val listener: OnInteractionListener
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
 
     //вызывается, когда recyclerview нужно создать новую вьюшку для своего списка
@@ -24,8 +27,7 @@ class PostAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder =
         PostViewHolder(
             CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-            onLikeListener,
-            onShareListener,
+            listener
         )
 
     //заполняет шаблон разметки (в нашем случае CardPostBinding) данными
@@ -45,5 +47,4 @@ class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
     //на предмет содержания идентичных данных
     //если данные не совпадут - элемент на экране обновится
     override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean = oldItem == newItem
-
 }
