@@ -14,4 +14,5 @@
     <string name="cancel_edit">Отменить редактирование</string>
     <string name="action_edit">Редактирование сообщения</string>
     <string name="action_create">Создание сообщения</string>
+    <string name="dud">dud</string>
 </resources>
