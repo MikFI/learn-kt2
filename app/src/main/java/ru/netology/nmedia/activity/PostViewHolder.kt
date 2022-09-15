@@ -6,6 +6,8 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import kotlin.math.floor
 
+//создаёт вьюшку для каждого поста из набора, для отображения на экране в виде списка
+//по идее, можно было затолкать в один класс с адаптером, поскольку это, в некотором роде, его дочка
 class PostViewHolder(
     private val binding: CardPostBinding,
     private val onLikeListener: (Post) -> Unit,
@@ -16,6 +18,7 @@ class PostViewHolder(
         setListeners(binding, post)
     }
 
+    //суём в разметку (через binding) данные, прилетевшие из post
     private fun updateView(post: Post, binding: CardPostBinding) {
         binding.apply {
             author.text = post.author
@@ -30,6 +33,7 @@ class PostViewHolder(
         }
     }
 
+    //назначаем обработчики на иконки (а, заодно, и на текст рядом с ними) лайка и шары
     private fun setListeners(binding: CardPostBinding, post: Post) {
         binding.apply {
             postLikesIcon.setOnClickListener { onLikeListener(post) }
