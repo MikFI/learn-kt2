@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_size"
-        android:layout_height="@dimen/avatar_size"
+        android:layout_width="@dimen/tap_element_size"
+        android:layout_height="@dimen/tap_element_size"
         android:contentDescription="@string/description_post_author_avatar"
         android:src="@drawable/ic_launcher_foreground"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,13 +40,12 @@
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:text="@sample/posts.json/data/published" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/menuButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        style="@style/PostButton"
         android:contentDescription="@string/description_post_menu"
-        android:src="@drawable/ic_baseline_more_vert_24"
+        app:icon="@drawable/ic_baseline_more_vert_24"
+        app:iconGravity="textStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -73,66 +72,35 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="content" />
 
-
-    <ImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/postLikesIcon"
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
-        android:layout_marginTop="@dimen/margin_size"
+        style="@style/PostFooterButton"
+        android:checkable="true"
         android:contentDescription="@string/description_post_likes"
-        android:src="@drawable/ic_like_gray_24"
+        app:icon="@drawable/like_toggle_24"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contentBarrier"
-        tools:srcCompat="@drawable/ic_like_gray_24" />
-
-    <TextView
-        android:id="@+id/postLikesCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/postLikesIcon"
-        app:layout_constraintStart_toEndOf="@id/postLikesIcon"
-        app:layout_constraintTop_toTopOf="@id/postLikesIcon"
         tools:text="100" />
 
-    <ImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/postSharesIcon"
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
-        android:layout_marginStart="@dimen/margin_size"
-        android:layout_marginTop="@dimen/margin_size"
+        style="@style/PostFooterButton"
+        android:layout_marginStart="8dp"
         android:contentDescription="@string/description_post_shares"
-        android:src="@drawable/ic_baseline_share_24"
-        app:layout_constraintStart_toEndOf="@id/postLikesCount"
+        app:icon="@drawable/ic_shares_24"
+        app:layout_constraintStart_toEndOf="@id/postLikesIcon"
         app:layout_constraintTop_toBottomOf="@id/contentBarrier"
-        tools:srcCompat="@drawable/ic_baseline_share_24" />
-
-    <TextView
-        android:id="@+id/post_shares_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/postSharesIcon"
-        app:layout_constraintStart_toEndOf="@id/postSharesIcon"
-        app:layout_constraintTop_toTopOf="@id/postSharesIcon"
+        tools:srcCompat="@drawable/ic_shares_24"
         tools:text="100" />
 
-    <ImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/postViewsIcon"
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
-        android:layout_marginTop="@dimen/margin_size"
+        style="@style/PostFooterButton"
         android:contentDescription="@string/description_post_views"
-        android:src="@drawable/ic_baseline_remove_red_eye_24"
-        app:layout_constraintEnd_toStartOf="@id/postViewsCount"
-        app:layout_constraintTop_toBottomOf="@id/contentBarrier"
-        tools:srcCompat="@drawable/ic_baseline_remove_red_eye_24" />
-
-    <TextView
-        android:id="@+id/postViewsCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/postViewsIcon"
+        app:icon="@drawable/ic_views_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/postViewsIcon"
+        app:layout_constraintTop_toBottomOf="@id/contentBarrier"
+        tools:srcCompat="@drawable/ic_views_24"
         tools:text="100" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
