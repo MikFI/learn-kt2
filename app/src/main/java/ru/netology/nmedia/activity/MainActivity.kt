@@ -37,24 +37,19 @@ class MainActivity : AppCompatActivity() {
         //получаем список постов и перематываем на самый верх в случае,
         //если количество постов увеличилось на 1 в сравнении с прошлым обновлением
         //(т.е. если только что добавили 1 пост)
-        var topElement = 0
-        var lastElementCount = 0
         binding.postList.adapter = adapter
         viewModel.data.observe(this) { posts ->
-            adapter.submitList(posts)
-            topElement = posts.size
-            if (topElement > lastElementCount) {
-                binding.postList.scrollToPosition(0)
+            val newPost = posts.size > adapter.currentList.size
+            adapter.submitList(posts) {
+                if (newPost) {
+                    binding.postList.scrollToPosition(0)
+                }
             }
-            lastElementCount = topElement
         }
 
         //id поста, находящегося в поле для редактирования
         //(для реализации костыля, реагирующего на удаление поста во время редактирования)
         var activePostId = 0L
-
-        //ещё один костыль, в котором хранится флаг того, что на поле ввода находится фокус
-        var inputFocused = false
 
         //следим за "транслятором" - если он изменился (выбрано "редактировать" у поста и,
         //соответственно, во "временном" посте появилось то, что нужно отредактировать),
@@ -71,7 +66,6 @@ class MainActivity : AppCompatActivity() {
                 actionText.text = it.content
                 groupEditAction.visibility = View.VISIBLE
                 actionTypeCreate.visibility = View.GONE
-                inputFocused = true
                 newContent.requestFocus()
                 AndroidUtils.showKeyboard(newContent)
             }
@@ -83,7 +77,6 @@ class MainActivity : AppCompatActivity() {
             if (it == activePostId) {
                 binding.apply {
                     newContent.setText("")
-                    inputFocused = false
                     newContent.clearFocus()
                     groupEditAction.visibility = View.GONE
                     AndroidUtils.hideKeyboard(newContent)
@@ -94,6 +87,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        //обработчик нажатия кнопки "отправить", что рядом с полем ввода
         binding.buttonSendPost.setOnClickListener {
             binding.apply {
                 val text = newContent.text?.toString()?.trim()
@@ -105,17 +99,16 @@ class MainActivity : AppCompatActivity() {
                 viewModel.changeContent(text)
                 viewModel.sendPost()
                 newContent.setText("")
-                inputFocused = false
                 newContent.clearFocus()
                 groupEditAction.visibility = View.GONE
                 AndroidUtils.hideKeyboard(newContent)
             }
         }
 
+        //обработчик кнопки "закрыть" в менюшке над полем ввода
         binding.buttonCancelEdit.setOnClickListener {
             binding.apply {
                 newContent.setText("")
-                inputFocused = false
                 newContent.clearFocus()
                 groupEditAction.visibility = View.GONE
                 AndroidUtils.hideKeyboard(newContent)
@@ -123,11 +116,10 @@ class MainActivity : AppCompatActivity() {
             viewModel.cleanPostData()
         }
 
-        binding.newContent.setOnFocusChangeListener { view, b ->
-            if (inputFocused) {
-                return@setOnFocusChangeListener
-            }
-            if (binding.newContent.isFocused) {
+        //отображение корректного текста (создание/редактирование сообщения)
+        //в менюшке над полем ввода
+        binding.newContent.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
                 binding.apply {
                     groupEditAction.visibility = View.VISIBLE
                     actionTypeEdit.visibility = View.GONE

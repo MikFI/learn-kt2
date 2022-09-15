@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Nooba</string>
     <string name="description_post_author_avatar">Post author avatar</string>
@@ -13,6 +14,7 @@
     <string name="cancel_edit">Cancel edit</string>
     <string name="action_edit">Edit post</string>
     <string name="action_create">Create Post</string>
+    <string name="dud">dud</string>
     <string name="share_post">Share post</string>
 
 </resources>
