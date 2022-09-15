@@ -1,5 +1,6 @@
 package ru.netology.nmedia.activity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -28,19 +29,21 @@ class MainActivity : AppCompatActivity() {
         //создаём viewModel, в которой будут производиться все действия с данными
         //здесь же, в activity, мы их только отображаем
         val viewModel: PostViewModel by viewModels()
-        val adapter = PostAdapter(listener = PostInteraction(viewModel))
 
-        var topElement = 0
-        var lastElementCount = 0
+        //втыкаем взаимодействие с постом (лайк, шара, редактирование) через функцию,
+        //которая обретается где-то ниже
+        val adapter = PostAdapter(listener = PostInteraction(v = viewModel, view = binding.root))
 
         //получаем список постов и перематываем на самый верх в случае,
         //если количество постов увеличилось на 1 в сравнении с прошлым обновлением
         //(т.е. если только что добавили 1 пост)
+        var topElement = 0
+        var lastElementCount = 0
         binding.postList.adapter = adapter
         viewModel.data.observe(this) { posts ->
             adapter.submitList(posts)
             topElement = posts.size
-            if (topElement > lastElementCount){
+            if (topElement > lastElementCount) {
                 binding.postList.scrollToPosition(0)
             }
             lastElementCount = topElement
@@ -50,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         //(для реализации костыля, реагирующего на удаление поста во время редактирования)
         var activePostId = 0L
 
+        //ещё один костыль, в котором хранится флаг того, что на поле ввода находится фокус
         var inputFocused = false
 
         //следим за "транслятором" - если он изменился (выбрано "редактировать" у поста и,
@@ -134,15 +138,22 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class PostInteraction(viewModel: PostViewModel) : OnInteractionListener {
-    private val v = viewModel
-
+class PostInteraction(private val v: PostViewModel, private val view: View) :
+    OnInteractionListener {
     override fun like(post: Post) {
         v.likeById(post.id)
     }
 
     override fun share(post: Post) {
         v.shareById(post.id)
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, post.content)
+            type = "text/plain"
+        }
+        val shareIntent =
+            Intent.createChooser(intent, view.resources.getString(R.string.share_post))
+        view.context.startActivity(shareIntent)
     }
 
     override fun edit(post: Post) {
