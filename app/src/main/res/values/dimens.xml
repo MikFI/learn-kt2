@@ -2,6 +2,6 @@
 <resources>
     <dimen name="padding_size_ic24">12dp</dimen>
     <dimen name="margin_size">16dp</dimen>
-    <dimen name="icon_size">20dp</dimen>
-    <dimen name="avatar_size">48dp</dimen>
+    <dimen name="icon_size">24dp</dimen>
+    <dimen name="tap_element_size">48dp</dimen>
 </resources>
