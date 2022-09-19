@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryInMemoryImpl
 
+
 //шаблон для создания нового поста
 //если ничего, кроме content не было передано - пост именно в таком виде и
 //улетит в хранилище (которое уже само бует разбираться, чего с этим делать)
@@ -31,7 +32,7 @@ class PostViewModel : ViewModel() {
 
     //сбрасываем содержимое поста после нажатия кнопки закрытия редактирования
     //чтобы новое сообщение после этого не вставлялось непойми куда посреди ленты
-    fun cleanPostData(){
+    fun cleanPostData() {
         tempPost.value = emptyPost
     }
 
@@ -46,7 +47,7 @@ class PostViewModel : ViewModel() {
         tempPost.value = post
     }
 
-    fun removeById(id: Long){
+    fun removeById(id: Long) {
         deleted.value = id
         repository.removeById(id)
     }
@@ -64,11 +65,10 @@ class PostViewModel : ViewModel() {
     //обновляем текст нашего временного поста
     //если он отличается от того, что там лежит в данный момент
     fun changeContent(text: String) {
-        if (text == tempPost.value?.content) {
+        val newText = text.trim()
+        if (newText == tempPost.value?.content) {
             return
         }
-        tempPost.value = tempPost.value?.copy(content = text)
+        tempPost.value = tempPost.value?.copy(content = newText)
     }
-
-
 }
