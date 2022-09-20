@@ -1,10 +1,10 @@
 package ru.netology.nmedia.activity
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -13,9 +13,7 @@ import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostAdapter
-import ru.netology.nmedia.adapter.PostViewHolder
 import ru.netology.nmedia.databinding.ActivityMainBinding
-import ru.netology.nmedia.databinding.CardPostBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -36,6 +34,10 @@ class MainActivity : AppCompatActivity() {
         //втыкаем взаимодействие с постом (лайк, шара, редактирование) через функцию,
         //которая обретается где-то ниже
         val adapter = PostAdapter(listener = PostInteraction(vm = viewModel, view = binding.root))
+
+        //назначаем SharedPref для хранения наших постов
+        //просто для проверки, смысла оно особого не несёт (сама функция ниже)
+//        setReadWrite()
 
         //получаем список постов и перематываем на самый верх в случае,
         //если количество постов увеличилось на 1 в сравнении с прошлым обновлением
@@ -76,6 +78,22 @@ class MainActivity : AppCompatActivity() {
             activityPostLauncher.launch(null)
         }
     }
+
+    fun setReadWrite() {
+        run {
+            val preferences = getPreferences(Context.MODE_PRIVATE)
+            preferences.edit().apply {
+                putString("key", "value")
+                commit()
+            }
+        }
+        run {
+            getPreferences(Context.MODE_PRIVATE)
+                .getString("key", "no value")?.let {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                }
+        }
+    }
 }
 
 class PostInteraction(private val vm: PostViewModel, private val view: View) :
@@ -102,7 +120,6 @@ class PostInteraction(private val vm: PostViewModel, private val view: View) :
 
     override fun remove(post: Post) {
         vm.removeById(post.id)
-
     }
 
     override fun playVideo(url: String) {

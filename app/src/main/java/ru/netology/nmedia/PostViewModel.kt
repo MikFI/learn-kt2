@@ -1,9 +1,13 @@
 package ru.netology.nmedia
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.netology.nmedia.repository.PostRepository
+import ru.netology.nmedia.repository.PostRepositoryFileImpl
 import ru.netology.nmedia.repository.PostRepositoryInMemoryImpl
+import ru.netology.nmedia.repository.PostRepositorySharedPrefsImpl
 
 
 //шаблон для создания нового поста
@@ -18,8 +22,10 @@ private val emptyPost: Post = Post(
 
 //viewModel связывает UI с репозиторием(хранилищем) и отвечает за обработку того, что будет отрисовано в UI
 //UI просит данные для отрисовки из хранилища через этот класс
-class PostViewModel : ViewModel() {
-    private val repository: PostRepository = PostRepositoryInMemoryImpl()
+//class PostViewModel : ViewModel() {
+class PostViewModel(application: Application) : AndroidViewModel(application) {
+//    private val repository: PostRepository = PostRepositoryInMemoryImpl()
+    private val repository: PostRepository = PostRepositoryFileImpl(application)
     val data = repository.getAll()
     fun likeById(id: Long) = repository.likeById(id)
     fun shareById(id: Long) = repository.shareById(id)
