@@ -1,17 +1,21 @@
 package ru.netology.nmedia.activity
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import ru.netology.nmedia.AndroidUtils
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostAdapter
+import ru.netology.nmedia.adapter.PostViewHolder
 import ru.netology.nmedia.databinding.ActivityMainBinding
+import ru.netology.nmedia.databinding.CardPostBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -28,7 +32,10 @@ class MainActivity : AppCompatActivity() {
         //создаём viewModel, в которой будут производиться все действия с данными
         //здесь же, в activity, мы их только отображаем
         val viewModel: PostViewModel by viewModels()
-        val adapter = PostAdapter(listener = PostInteraction(viewModel))
+
+        //втыкаем взаимодействие с постом (лайк, шара, редактирование) через функцию,
+        //которая обретается где-то ниже
+        val adapter = PostAdapter(listener = PostInteraction(vm = viewModel, view = binding.root))
 
         //получаем список постов и перематываем на самый верх в случае,
         //если количество постов увеличилось на 1 в сравнении с прошлым обновлением
@@ -43,105 +50,65 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //id поста, находящегося в поле для редактирования
-        //(для реализации костыля, реагирующего на удаление поста во время редактирования)
-        var activePostId = 0L
+        //регистрация контракта на добавление/изменение поста
+        val activityPostLauncher = registerForActivityResult(NewPostActivity.Contract()) { text ->
+            if (text.isNullOrBlank()) {
+                Toast.makeText(this, R.string.empty_content_error, Toast.LENGTH_LONG).show()
+                return@registerForActivityResult
+            }
+            viewModel.changeContent(text)
+            viewModel.sendPost()
+        }
 
         //следим за "транслятором" - если он изменился (выбрано "редактировать" у поста и,
         //соответственно, во "временном" посте появилось то, что нужно отредактировать),
-        //то включаем поле ввода, клавиатуру и копируем туда содержимое "временного" поста
-        //(при этом реагируем только на редактирование, а не на создание - т.е. id не должен быть передан)
+        //то запускаем контракт на создание/редактирование поста
         viewModel.tempPost.observe(this) {
             if (it.id == 0L) {
                 return@observe
             }
-
-            activePostId = it.id
-            binding.apply {
-                newContent.setText(it.content)
-                actionText.text = it.content
-                groupEditAction.visibility = View.VISIBLE
-                actionTypeCreate.visibility = View.GONE
-                newContent.requestFocus()
-                AndroidUtils.showKeyboard(newContent)
-            }
+            activityPostLauncher.launch(it.content)
         }
 
-        //если пост удаляется во время редактирования,
-        //то все поля очищаются и фокус ввода сбрасывается
-        viewModel.deleted.observe(this) {
-            if (it == activePostId) {
-                binding.apply {
-                    newContent.setText("")
-                    newContent.clearFocus()
-                    groupEditAction.visibility = View.GONE
-                    AndroidUtils.hideKeyboard(newContent)
-                }
-                viewModel.cleanPostData()
-            } else {
-                return@observe
-            }
-        }
-
-        //обработчик нажатия кнопки "отправить", что рядом с полем ввода
-        binding.buttonSendPost.setOnClickListener {
-            binding.apply {
-                val text = newContent.text?.toString()?.trim()
-                if (text.isNullOrBlank()) {
-                    val emptyString = resources.getString(R.string.empty_content_error)
-                    Toast.makeText(newContent.context, emptyString, Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
-                viewModel.changeContent(text)
-                viewModel.sendPost()
-                newContent.setText("")
-                newContent.clearFocus()
-                groupEditAction.visibility = View.GONE
-                AndroidUtils.hideKeyboard(newContent)
-            }
-        }
-
-        //обработчик кнопки "закрыть" в менюшке над полем ввода
-        binding.buttonCancelEdit.setOnClickListener {
-            binding.apply {
-                newContent.setText("")
-                newContent.clearFocus()
-                groupEditAction.visibility = View.GONE
-                AndroidUtils.hideKeyboard(newContent)
-            }
-            viewModel.cleanPostData()
-        }
-
-        //отображение корректного текста (создание/редактирование сообщения)
-        //в менюшке над полем ввода
-        binding.newContent.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                binding.apply {
-                    groupEditAction.visibility = View.VISIBLE
-                    actionTypeEdit.visibility = View.GONE
-                    actionText.visibility = View.GONE
-                }
-            }
+        //запускаем контракт по добавлению поста на нажатие кнопки
+        //он запускает createIntent, который запускает NewPostActivity
+        binding.addPostButton.setOnClickListener {
+            activityPostLauncher.launch(null)
         }
     }
 }
 
-class PostInteraction(viewModel: PostViewModel) : OnInteractionListener {
-    private val v = viewModel
-
+class PostInteraction(private val vm: PostViewModel, private val view: View) :
+    OnInteractionListener {
     override fun like(post: Post) {
-        v.likeById(post.id)
+        vm.likeById(post.id)
     }
 
     override fun share(post: Post) {
-        v.shareById(post.id)
+        vm.shareById(post.id)
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, post.content)
+            type = "text/plain"
+        }
+        val shareIntent =
+            Intent.createChooser(intent, view.resources.getString(R.string.share_post))
+        view.context.startActivity(shareIntent)
     }
 
     override fun edit(post: Post) {
-        v.edit(post)
+        vm.edit(post)
     }
 
     override fun remove(post: Post) {
-        v.removeById(post.id)
+        vm.removeById(post.id)
+
+    }
+
+    override fun playVideo(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        val playIntent =
+            Intent.createChooser(intent, view.resources.getString(R.string.share_post))
+        view.context.startActivity(playIntent)
     }
 }
