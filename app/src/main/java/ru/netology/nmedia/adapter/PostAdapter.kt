@@ -12,6 +12,7 @@ interface OnInteractionListener {
     fun share(post: Post)
     fun edit(post: Post)
     fun remove(post: Post)
+    fun playVideo(url: String)
 }
 
 //adapter представляет собой мост между набором данных и объектом, использующим эти данные
