@@ -56,11 +56,16 @@ dependencies {
     // activity
     implementation "androidx.activity:activity-ktx:$activity_version"
 
+    //для отображения элементов списком
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+
+    //для работы с JSON-форматом
+    implementation("com.google.code.gson:gson:2.8.9")
+
     //
     implementation "androidx.fragment:fragment-ktx:1.5.2"
 
-    //для отображения элементов списком
-    implementation("androidx.recyclerview:recyclerview:1.2.1")
+
 
 
 }
