@@ -13,6 +13,7 @@ interface OnInteractionListener {
     fun edit(post: Post)
     fun remove(post: Post)
     fun playVideo(url: String)
+    fun openPost(post: Post)
 }
 
 //adapter представляет собой мост между набором данных и объектом, использующим эти данные
@@ -21,7 +22,6 @@ interface OnInteractionListener {
 class PostAdapter(
     private val listener: OnInteractionListener
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
-
     //вызывается, когда recyclerview нужно создать новую вьюшку для своего списка
     //(например, для отображения следующего элемента при пролистывании списка)
     //возвращает "шаблон" вьюшки (ViewHolder), куда будут заноситься данные через onBindViewHolder

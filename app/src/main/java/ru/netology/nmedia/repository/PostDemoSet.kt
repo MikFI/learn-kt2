@@ -74,6 +74,13 @@ object PostDemoSet {
             content = "Тест https://www.youtube.com/watch?v=zkWxiJiX-Pk чтобы ссылка сработала, достаточно вставить её в пост. Можно через редактирование.",
             published = "23 сентября в 10:12",
             likedByMe = false,
+        ),
+        Post(
+            id = nextId++,
+            author = "Нетология. Университет интернет-профессий будущего",
+            content = "Д\nл\nи\nн\nн\nо\nп\nо\nс\nт\n \nт\nе\nс\nт\n \nд\nл\nя\n \nс\nк\nр\nо\nл\nл\nи\nн\nг\nа\n \nэ\nк\nр\nа\nн\nа\n",
+            published = "23 сентября в 10:12",
+            likedByMe = false,
         )
     ).reversed()
 }

@@ -34,7 +34,7 @@ class PostRepositoryFileImpl(
         } else {
             //если не существует - пишем пустой массив
             //(и, соответственно, создаём пустой файл)
-            sync()
+//            sync()
             //пишем в этот пустой файл наши демо-посты из прошлых занятий
             posts = PostDemoSet.posts
             data.value = posts
