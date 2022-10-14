@@ -62,10 +62,10 @@ dependencies {
     //для работы с JSON-форматом
     implementation("com.google.code.gson:gson:2.8.9")
 
-    //
+    //для работы с фрагментами
     implementation "androidx.fragment:fragment-ktx:1.5.2"
 
-
-
-
+    //для навигации между фрагментами
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.2"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.2"
 }

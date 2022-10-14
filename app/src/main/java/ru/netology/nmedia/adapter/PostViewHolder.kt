@@ -1,9 +1,7 @@
 package ru.netology.nmedia.adapter
 
-import android.view.MotionEvent
 import android.view.View
 import android.widget.PopupMenu
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
@@ -55,6 +53,7 @@ class PostViewHolder(
         binding.apply {
             postLikesIcon.setOnClickListener { listener.like(post) }
             postSharesIcon.setOnClickListener { listener.share(post) }
+            content.setOnClickListener { listener.openPost(post) }
             menuButton.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
