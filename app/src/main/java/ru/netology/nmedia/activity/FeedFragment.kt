@@ -35,17 +35,16 @@ class FeedFragment : Fragment() {
         //в котором всё это описано
         val adapter = PostAdapter(listener = PostInteraction(vm = viewModel, view = binding.root))
 
-        //получаем список постов и перематываем на самый верх в случае,
-        //если количество постов увеличилось на 1 в сравнении с прошлым обновлением
-        //(т.е. если только что добавили 1 пост)
+        //получаем список постов
         binding.postList.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { posts ->
-            val newPost = posts.size > adapter.currentList.size
-            adapter.submitList(posts) {
-                if (newPost) {
-                    binding.postList.scrollToPosition(0)
-                }
-            }
+            adapter.submitList(posts)
+        }
+
+        //перематываем на самый верх в случае, если количество постов увеличилось
+        //в сравнении с прошлым обновлением (т.е. если только что добавили 1 пост)
+        viewModel.postsInFeed.observe(viewLifecycleOwner){
+            binding.postList.scrollToPosition(0)
         }
 
         //переход между фрагментами по нажатию кнопки добавления поста

@@ -18,4 +18,7 @@
     <string name="share_post">Поделиться сообщением</string>
     <string name="video_preview">Предпросмотр видео</string>
     <string name="play">Запустить</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="alert_load_draft">У вас остался черновик сообщения. Загрузить?</string>
 </resources>

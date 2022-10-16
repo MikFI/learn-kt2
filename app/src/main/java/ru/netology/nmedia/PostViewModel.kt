@@ -3,8 +3,10 @@ package ru.netology.nmedia
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryFileImpl
+import ru.netology.nmedia.repository.PostRepositorySQLiteImpl
 
 //шаблон для создания нового поста
 //если ничего, кроме content не было передано - пост именно в таком виде и
@@ -20,56 +22,57 @@ private val emptyPost: Post = Post(
 //UI просит данные для отрисовки из хранилища через этот класс
 //class PostViewModel : ViewModel() {
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositoryFileImpl(application)
+    //private val repository: PostRepository = PostRepositoryFileImpl(application)
+    private val repository: PostRepository = PostRepositorySQLiteImpl(
+        AppDb.getInstance(application).postDao,
+        application
+    )
     val data = repository.getAll()
     fun likeById(id: Long) = repository.likeById(id)
     fun shareById(id: Long) = repository.shareById(id)
 
     //tempPost - "несуществующий", временный пост, пользователь его не видит,
-    //заодно выступает классом транслирующим изменения себя всем, кто на него подписан
-    //подписчики (observe) видят изменения этой хтони и реагируют
-    //в нашем случае mainactivity реагирует на редактирование
-    val tempPost = MutableLiveData(emptyPost)
+    //выступает обёрткой над действиями с постами
+    private var tempPost = emptyPost
 
-    //сбрасываем содержимое поста после нажатия кнопки закрытия редактирования
-    //чтобы новое сообщение после этого не вставлялось непойми куда посреди ленты
-    fun cleanPostData() {
-        tempPost.value = emptyPost
-    }
-
-    //костыль для случая, когда кнопка "удалить" была нажата во время редактирования поста
-    //данная переменная хранит id удаляемого поста и как только происходит удаление, на это реагирует
-    //активити и зачищает поля ввода, если id совпало с тем, что находилось на редактировании
-    val deleted = MutableLiveData<Long>()
+    //костыль для перематывания списка постов вверх при добавлении нового
+    //при переходе между фрагментами адаптер клинит, и он не выдаёт актуальные
+    //данные в adapter.currentList.size, в результате чего либо список перематывается
+    //наверх при любом действии с постом, либо не перематывается никогда
+    //(в зависимости от реализации)
+    val postsInFeed = MutableLiveData<Int>()
 
     //суём во временный пост то, что нам отправили на редактирование
-    //потом оно будет изменено через changeContent--sendPost
+    //потом оно (не)будет изменено через changeContent--sendPost
+    //(в зависимости от того, внесены ли какие-то изменения или нет)
     fun edit(post: Post) {
-        tempPost.value = post
+        tempPost = post
     }
 
     fun removeById(id: Long) {
-        deleted.value = id
         repository.removeById(id)
     }
 
     //создаём/обновляем пост (посылаем временный пост в репозиторий - он сам разберётся),
     fun sendPost() {
-        tempPost.value?.let {
+        tempPost.let {
             repository.save(it)
+        }
+        if (tempPost.id == 0L) {
+            postsInFeed.value = data.value?.size
         }
         //зануляем пост после сохранения, чтобы в следующий пост,
         //прошедший через эту функцию, не просочились поля из текущего поста
-        tempPost.value = emptyPost
+        tempPost = emptyPost
     }
 
     //обновляем текст нашего временного поста
     //если он отличается от того, что там лежит в данный момент
     fun changeContent(text: String) {
         val newText = text.trim()
-        if (newText == tempPost.value?.content) {
+        if (newText == tempPost.content) {
             return
         }
-        tempPost.value = tempPost.value?.copy(content = newText)
+        tempPost = tempPost.copy(content = newText)
     }
 }
