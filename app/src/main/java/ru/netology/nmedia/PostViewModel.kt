@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryFileImpl
 import ru.netology.nmedia.repository.PostRepositorySQLiteImpl
 
 //шаблон для создания нового поста
@@ -22,7 +21,6 @@ private val emptyPost: Post = Post(
 //UI просит данные для отрисовки из хранилища через этот класс
 //class PostViewModel : ViewModel() {
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    //private val repository: PostRepository = PostRepositoryFileImpl(application)
     private val repository: PostRepository = PostRepositorySQLiteImpl(
         AppDb.getInstance(application).postDao,
         application
