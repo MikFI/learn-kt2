@@ -54,7 +54,7 @@ class ViewPostFragment : Fragment() {
     }
 }
 
-open class PostInteractionSingle(private val vm: PostViewModel, private val view: View) :
+class PostInteractionSingle(private val vm: PostViewModel, private val view: View) :
     PostInteraction(vm, view) {
     //заменяем переход из ленты на переход из карточки поста
     override fun edit(post: Post) {
