@@ -1,86 +1,52 @@
 package ru.netology.nmedia.repository
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.db.PostEntity
 
 class PostRepositorySQLiteImpl(
     private val dao: PostDao,
     context: Context
 ) : PostRepository {
-    //список постов, который мы тут будем постоянно обновлять и писать в data
-    private var posts = emptyList<Post>()
-
-    //переменная, в которой будут храниться данные (в нашем случае посты), за которой
-    //через viewmodel будет следить (observe) активити (или фрагмент), в котором
-    //эти данные отображаются
-    private val data = MutableLiveData(posts)
-
     private val sharedPrefs = context.getSharedPreferences("repo", Context.MODE_PRIVATE)
 
     init {
         //если это первый запуск (значения "firstRun" в SharedPreferences нет),
         //то напихиваем в репозиторий стартовый набор постов из PostDemoSet
-        if (sharedPrefs.getBoolean("firstRun", true)){
-            posts = PostDemoSet.posts.reversed()
+        if (sharedPrefs.getBoolean("firstRun", true)) {
+            val posts = PostDemoSet.posts.reversed()
             posts.forEach {
-                dao.save(it)
+                dao.save(PostEntity.fromDataToDB(it))
             }
-            sharedPrefs.edit().apply(){
+            sharedPrefs.edit().apply() {
                 putBoolean("firstRun", false)
                 apply()
             }
         }
-        //получаем в data список всех постов (для отображения во фрагменте из observe)
-        posts = dao.getAll()
-        data.value = posts
     }
 
-    override fun getAll(): LiveData<List<Post>> = data
+    //livedata возвращается библиотекой room, и поэтому нам тут, в репозитории, не требуется
+    //в виде отдельной переменной - вместо этого обращаемся к livedata из room, пользуясь
+    //классом Transformations, создающим новую livedata из уже существующей,
+    //переводя посты из объектов бд в объекты нашей программы
+    //именно эту функцию вызовет viewmodel, через которую активити (или фрагмент) и будет
+    //следить (observe) за всеми изменениями для отображения их на экране
+    override fun getAll() = Transformations.map(dao.getAll()) { posts -> posts.map { it.fromDBtoData() } }
+    //то же самое, только записано чуть короче - livedata имеет функцию расширения map,
+    //вызывающую внутри Transformations.map
+//    override fun getAll() = dao.getAll().map { posts -> posts.map { it.fromDBtoData() } }
 
-    override fun save(post: Post) {
-        val id = post.id
-        //сохраняем пост в базу...
-        val saved = dao.save(post)
-        //...и в data, для отображения
-        //(все дальнейшие функции построены аналогично)
-        posts = if (id == 0L) {
-            listOf(saved) + posts
-        } else {
-            posts.map {
-                if (it.id != id) it else saved
-            }
-        }
-        data.value = posts
-    }
+    //выше мы привязались к livedata, которую отдаёт room
+    //и поэтому все функции, описанные ниже, вносят изменения только в бд
+    //изменения в ней автоматически отражаются на экране
+    override fun save(post: Post) = dao.save(PostEntity.fromDataToDB(post))
 
-    override fun likeById(id: Long) {
-        dao.likeById(id)
-        posts = posts.map {
-            if (it.id != id) it else it.copy(
-                likedByMe = !it.likedByMe,
-                likes = if (it.likedByMe) it.likes - 1 else it.likes + 1
-            )
-        }
-        data.value = posts
-    }
+    override fun likeById(id: Long) = dao.likeById(id)
 
-    override fun shareById(id: Long) {
-        dao.shareById(id)
-        posts = posts.map {
-            if (it.id == id) {
-                it.copy(shares = it.shares + 1)
-            } else it
-        }
-        data.value = posts
-    }
+    override fun shareById(id: Long) = dao.shareById(id)
 
-    override fun removeById(id: Long) {
-        dao.removeById(id)
-        posts = posts.filter { it.id != id }
-        data.value = posts
-    }
+    override fun removeById(id: Long) = dao.removeById(id)
 }
 
