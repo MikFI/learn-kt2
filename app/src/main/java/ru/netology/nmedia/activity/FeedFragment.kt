@@ -1,12 +1,15 @@
 package ru.netology.nmedia.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.messaging.FirebaseMessaging
+import ru.netology.nmedia.FirebaseMsgSvc
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.PostAdapter
@@ -43,7 +46,7 @@ class FeedFragment : Fragment() {
 
         //перематываем на самый верх в случае, если количество постов увеличилось
         //в сравнении с прошлым обновлением (т.е. если только что добавили 1 пост)
-        viewModel.postsInFeed.observe(viewLifecycleOwner){
+        viewModel.postsInFeed.observe(viewLifecycleOwner) {
             binding.postList.scrollToPosition(0)
         }
 
@@ -51,6 +54,14 @@ class FeedFragment : Fragment() {
         binding.addPostButton.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
+
+        //получаем созданный ранее токен firebase (если по какой-то причине его потеряли),
+        //чтобы не переустанавливать приложение ради получения нового токена
+        val fcmTokenTask = FirebaseMessaging.getInstance().token.addOnCompleteListener {}
+        if (fcmTokenTask.isSuccessful) {
+            Log.d(FirebaseMsgSvc.TAG, "Your firebase token is: ${fcmTokenTask.result}")
+        }
+
         return binding.root
     }
 }
